@@ -1,20 +1,29 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Platform } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { storage } from './src/storage/storage';
+import Cadastro from './src/screens/Cadastro';
+import Confirmacao from './src/screens/Confirmacao';
 
 export default function App() {
+  const [telaAtual, setTelaAtual] = useState('cadastro');
+
+  useEffect(() => {
+    const dadosSalvos = storage.getString('usuario');
+    if (dadosSalvos) {
+      setTelaAtual('confirmacao');
+    }
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1 }}>
+        {telaAtual === 'cadastro' ? (
+          <Cadastro onCadastrado={() => setTelaAtual('confirmacao')} />
+        ) : (
+          <Confirmacao onNovoCadastro={() => setTelaAtual('cadastro')} />
+        )}
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
